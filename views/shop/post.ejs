@@ -1,0 +1,10 @@
+<%- include('../partials/shop_top') %>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/posts">Posts</a></li><li class="breadcrumb-item active"><%= post.title %></li></ol></nav>
+<article class="card shadow-sm">
+  <div class="card-body">
+    <h2><%= post.title %></h2>
+    <p class="text-secondary small">Published <%= post.created_at %></p>
+    <div class="post-body"><%= post.body %></div>
+  </div>
+</article>
+<%- include('../partials/shop_bottom') %>

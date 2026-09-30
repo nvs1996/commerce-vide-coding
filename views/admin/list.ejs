@@ -1,0 +1,72 @@
+<%- include('../partials/admin_top') %>
+<div class="card">
+  <div class="card-header d-flex align-items-center">
+    <h3 class="card-title mb-0"><%= r.label %> (<%= paging.total %>)</h3>
+    <a href="/admin/<%= key %>/new" class="btn btn-primary btn-sm ms-auto"><i class="bi bi-plus-lg"></i> Add new</a>
+  </div>
+  <div class="card-body table-responsive p-0">
+    <table class="table table-hover table-striped mb-0 align-middle">
+      <thead>
+        <tr>
+          <th style="width:70px">ID</th>
+          <% columns.forEach(c => { %><th><%= c.label.replace(/ \(.*\)$/, '') %></th><% }) %>
+          <th style="width:160px" class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!rows.length) { %><tr><td colspan="<%= columns.length + 2 %>" class="text-center text-secondary py-4">No records.</td></tr><% } %>
+        <% rows.forEach(row => { %>
+          <tr>
+            <td><%= row.id %></td>
+            <% columns.forEach(c => { %>
+              <td>
+                <% const v = row[c.name]; %>
+                <% if (c.type === 'ref' || c.type === 'enum') { %><%= labelOf(c, v) %>
+                <% } else if (c.type === 'image') { %>
+                  <% if (v) { %><img src="<%= v %>" alt="" class="rounded border" style="height:40px;width:40px;object-fit:cover"><% } %>
+                <% } else if (c.type === 'number' && c.name.includes('price')) { %><%= fmt(v) %>
+                <% } else { %><%= v === null || v === undefined ? '' : String(v).slice(0, 80) %><% } %>
+              </td>
+            <% }) %>
+            <td class="text-end text-nowrap">
+              <a href="/admin/<%= key %>/<%= row.id %>/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Edit</a>
+              <form method="post" action="/admin/<%= key %>/<%= row.id %>/delete" class="d-inline" onsubmit="return confirm('Delete this record?')">
+                <input type="hidden" name="page" value="<%= paging.page %>">
+                <input type="hidden" name="per_page" value="<%= paging.perPage %>">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer d-flex flex-wrap align-items-center gap-2">
+    <div class="text-secondary small">Showing <%= paging.from %>–<%= paging.to %> of <%= paging.total %></div>
+
+    <form method="get" action="/admin/<%= key %>" class="d-flex align-items-center gap-2 ms-sm-3 mb-0">
+      <label class="small text-secondary mb-0" for="per_page">Per page</label>
+      <select name="per_page" id="per_page" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+        <% paging.options.forEach(n => { %><option value="<%= n %>" <%= n === paging.perPage ? 'selected' : '' %>><%= n %></option><% }) %>
+      </select>
+    </form>
+
+    <% if (paging.pages > 1) {
+         const href = (p) => `/admin/${key}?page=${p}&per_page=${paging.perPage}`;
+         const nums = [];
+         for (let p = 1; p <= paging.pages; p++) {
+           if (p === 1 || p === paging.pages || Math.abs(p - paging.page) <= 2) nums.push(p);
+           else if (nums[nums.length - 1] !== '…') nums.push('…');
+         } %>
+      <ul class="pagination pagination-sm mb-0 ms-auto">
+        <li class="page-item <%= paging.page === 1 ? 'disabled' : '' %>"><a class="page-link" href="<%= href(paging.page - 1) %>">&laquo;</a></li>
+        <% nums.forEach(p => { %>
+          <% if (p === '…') { %><li class="page-item disabled"><span class="page-link">…</span></li>
+          <% } else { %><li class="page-item <%= p === paging.page ? 'active' : '' %>"><a class="page-link" href="<%= href(p) %>"><%= p %></a></li><% } %>
+        <% }) %>
+        <li class="page-item <%= paging.page === paging.pages ? 'disabled' : '' %>"><a class="page-link" href="<%= href(paging.page + 1) %>">&raquo;</a></li>
+      </ul>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/admin_bottom') %>

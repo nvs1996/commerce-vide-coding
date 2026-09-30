@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> | Commerce Shop</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/vendor/adminlte/css/adminlte.min.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body class="bg-body-tertiary d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/img/logo.svg" width="32" height="32" class="me-2 rounded" alt="">
+      <span class="fw-light"><b>Commerce</b>Shop</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="topnav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="/posts">Posts</a></li>
+      </ul>
+      <form class="d-flex me-lg-3 my-2 my-lg-0" action="/search" method="get" role="search">
+        <div class="input-group">
+          <input class="form-control" type="search" name="q" value="<%= q %>" placeholder="Search by name or SKU" aria-label="Search">
+          <button class="btn btn-light" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+      </form>
+      <ul class="navbar-nav align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="/cart"><i class="bi bi-cart3"></i> Cart
+            <% if (cartCount) { %><span class="badge text-bg-warning ms-1"><%= cartCount %></span><% } %>
+          </a>
+        </li>
+        <% if (customer) { %>
+          <li class="nav-item"><a class="nav-link" href="/account"><i class="bi bi-person-circle"></i> <%= customer.name %></a></li>
+          <li class="nav-item">
+            <form method="post" action="/logout" class="m-0"><button class="btn btn-sm btn-outline-light ms-lg-2">Logout</button></form>
+          </li>
+        <% } else { %>
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="btn btn-sm btn-light ms-lg-2" href="/register">Register</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4 flex-grow-1">
+  <% if (flash) { %><div class="alert alert-<%= flash.type %> alert-dismissible"><%= flash.msg %><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div><% } %>

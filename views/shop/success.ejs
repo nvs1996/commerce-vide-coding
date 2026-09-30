@@ -1,0 +1,15 @@
+<%- include('../partials/shop_top') %>
+<div class="text-center py-5">
+  <i class="bi bi-check-circle-fill text-success" style="font-size:4rem"></i>
+  <h2 class="mt-3">Order complete!</h2>
+  <p class="text-secondary">
+    Order <%= last.ids.map(i => '#' + i).join(', ') %> — status <span class="badge text-bg-success">Complete</span>.<br>
+    <% if (last.coupon) { %>
+      Original <%= fmt(last.subtotal) %> − coupon <%= last.coupon %> <%= fmt(last.discount) %> = <strong><%= fmt(last.total) %></strong>
+    <% } else { %>Total: <strong><%= fmt(last.total) %></strong><% } %>
+  </p>
+  <p>Any licenses included with your purchase have been added to your account.</p>
+  <a href="/account" class="btn btn-primary">View my account</a>
+  <a href="/" class="btn btn-outline-secondary">Continue shopping</a>
+</div>
+<%- include('../partials/shop_bottom') %>

@@ -1,0 +1,29 @@
+<%- include('../partials/shop_top') %>
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/">Products</a></li><li class="breadcrumb-item active"><%= product.name %></li></ol></nav>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-5">
+        <img src="<%= product.image || '/img/placeholder.svg' %>" class="img-fluid rounded w-100" alt="<%= product.name %>">
+      </div>
+      <div class="col-md-7">
+        <h2><%= product.name %></h2>
+        <p class="text-secondary mb-2">SKU: <strong><%= product.sku %></strong></p>
+        <div class="price text-primary fs-2 mb-3"><%= fmt(product.price) %></div>
+        <% if (product.license_name) { %>
+          <p><i class="bi bi-key"></i> Includes license: <span class="badge text-bg-info"><%= product.license_name %></span>
+            <span class="text-secondary small">— unlocks exclusive posts after purchase.</span></p>
+        <% } %>
+        <% if (inCart) { %>
+          <a href="/cart" class="btn btn-success"><i class="bi bi-check2"></i> In cart – view cart</a>
+        <% } else { %>
+          <form method="post" action="/cart/add">
+            <input type="hidden" name="product_id" value="<%= product.id %>">
+            <button class="btn btn-primary btn-lg"><i class="bi bi-cart-plus"></i> Add to cart</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/shop_bottom') %>

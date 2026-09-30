@@ -1,0 +1,85 @@
+<%- include('../partials/admin_top') %>
+<div class="card" style="max-width:760px">
+  <form method="post" enctype="multipart/form-data" action="/admin/<%= key %><%= isNew ? '' : '/' + row.id %>">
+    <div class="card-body">
+      <% r.fields.forEach(f => { %>
+        <% if (f.readonlyOnCreate && isNew) return; %>
+        <% const v = row[f.name] === null || row[f.name] === undefined ? '' : row[f.name]; %>
+        <div class="mb-3">
+          <label class="form-label" for="f_<%= f.name %>"><%= f.label %><% if (f.required) { %> <span class="text-danger">*</span><% } %></label>
+          <% if (f.type === 'textarea') { %>
+            <textarea class="form-control" rows="8" id="f_<%= f.name %>" name="<%= f.name %>"><%= v %></textarea>
+          <% } else if (f.type === 'ref') { %>
+            <select class="form-select" id="f_<%= f.name %>" name="<%= f.name %>">
+              <option value="">— None —</option>
+              <% opts[f.name].forEach(o => { %><option value="<%= o.value %>" <%= String(o.value) === String(v) ? 'selected' : '' %>><%= o.label %></option><% }) %>
+            </select>
+          <% } else if (f.type === 'enum') { %>
+            <select class="form-select" id="f_<%= f.name %>" name="<%= f.name %>">
+              <% opts[f.name].forEach(o => { %><option value="<%= o.value %>" <%= String(o.value) === String(v) || (isNew && v === '' && o === opts[f.name][0]) ? 'selected' : '' %>><%= o.label %></option><% }) %>
+            </select>
+          <% } else if (f.type === 'password') { %>
+            <input type="password" class="form-control" id="f_<%= f.name %>" name="<%= f.name %>" autocomplete="new-password" placeholder="<%= isNew ? '' : 'Leave blank to keep current password' %>">
+          <% } else if (f.type === 'date') { %>
+            <input type="date" class="form-control" id="f_<%= f.name %>" name="<%= f.name %>" value="<%= String(v).slice(0, 10) %>">
+          <% } else if (f.type === 'datetime') { %>
+            <input type="datetime-local" class="form-control" id="f_<%= f.name %>" name="<%= f.name %>" value="<%= String(v).replace(' ', 'T').slice(0, 16) %>">
+          <% } else if (f.type === 'image') { %>
+            <input type="hidden" name="<%= f.name %>" value="<%= v %>">
+            <div class="mb-2">
+              <img id="prev_<%= f.name %>" src="<%= v %>" alt="Preview" class="img-thumbnail <%= v ? '' : 'd-none' %>" style="max-height:200px;max-width:100%">
+              <div id="none_<%= f.name %>" class="text-secondary small <%= v ? 'd-none' : '' %>">No image</div>
+            </div>
+            <input type="file" class="form-control img-input" id="f_<%= f.name %>" name="<%= f.name %>_file"
+                   accept="image/png,image/jpeg,image/gif,image/webp" data-field="<%= f.name %>" data-original="<%= v %>">
+            <div class="form-text">JPG, PNG, GIF or WebP, up to 5 MB.</div>
+            <div class="form-check mt-2 <%= v ? '' : 'd-none' %>" id="rm_wrap_<%= f.name %>">
+              <input class="form-check-input" type="checkbox" name="remove_<%= f.name %>" id="rm_<%= f.name %>">
+              <label class="form-check-label" for="rm_<%= f.name %>">Remove current image</label>
+            </div>
+          <% } else if (f.type === 'number') { %>
+            <input type="number" step="any" class="form-control" id="f_<%= f.name %>" name="<%= f.name %>" value="<%= v %>">
+          <% } else { %>
+            <input type="text" class="form-control" id="f_<%= f.name %>" name="<%= f.name %>" value="<%= v %>">
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary">Save</button>
+      <a href="/admin/<%= key %>" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+<script>
+  // Live image preview: selected file -> preview; "remove" -> hide preview.
+  document.querySelectorAll('.img-input').forEach(function (input) {
+    var name = input.dataset.field;
+    var img = document.getElementById('prev_' + name);
+    var none = document.getElementById('none_' + name);
+    var rm = document.getElementById('rm_' + name);
+    var rmWrap = document.getElementById('rm_wrap_' + name);
+    var blobUrl = null;
+
+    function show(src) {
+      img.src = src || '';
+      img.classList.toggle('d-none', !src);
+      none.classList.toggle('d-none', !!src);
+    }
+
+    input.addEventListener('change', function () {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      var file = input.files[0];
+      if (!file) { blobUrl = null; show(rm && rm.checked ? '' : input.dataset.original); return; }
+      if (file.size > 5 * 1024 * 1024) { alert('Image must be 5 MB or smaller.'); input.value = ''; return; }
+      blobUrl = URL.createObjectURL(file);
+      if (rm) rm.checked = false;
+      show(blobUrl);
+    });
+
+    if (rm) rm.addEventListener('change', function () {
+      if (rm.checked) { input.value = ''; show(''); } else { show(input.dataset.original); }
+    });
+  });
+</script>
+<%- include('../partials/admin_bottom') %>

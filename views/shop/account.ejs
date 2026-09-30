@@ -1,0 +1,117 @@
+<%- include('../partials/shop_top') %>
+<h3 class="mb-3">My account</h3>
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body text-center border-bottom">
+        <i class="bi bi-person-circle text-primary" style="font-size:3rem"></i>
+        <div class="fw-semibold"><%= me.name %></div>
+        <div class="text-secondary small">@<%= me.username %></div>
+      </div>
+      <div class="nav flex-column nav-pills p-2" id="account-tabs" role="tablist" aria-orientation="vertical">
+        <button class="nav-link text-start active" id="tab-profile" data-bs-toggle="pill" data-bs-target="#pane-profile" type="button" role="tab">
+          <i class="bi bi-person me-2"></i>Profile
+        </button>
+        <button class="nav-link text-start d-flex justify-content-between align-items-center" id="tab-orders" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab">
+          <span><i class="bi bi-receipt me-2"></i>Order History</span><span class="badge text-bg-secondary"><%= orders.length %></span>
+        </button>
+        <button class="nav-link text-start d-flex justify-content-between align-items-center" id="tab-licenses" data-bs-toggle="pill" data-bs-target="#pane-licenses" type="button" role="tab">
+          <span><i class="bi bi-key me-2"></i>My Licenses</span><span class="badge text-bg-secondary"><%= licenses.length %></span>
+        </button>
+        <button class="nav-link text-start d-flex justify-content-between align-items-center" id="tab-posts" data-bs-toggle="pill" data-bs-target="#pane-posts" type="button" role="tab">
+          <span><i class="bi bi-file-earmark-text me-2"></i>My Posts</span><span class="badge text-bg-secondary"><%= posts.length %></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-9">
+    <div class="tab-content">
+
+      <div class="tab-pane fade show active" id="pane-profile" role="tabpanel">
+        <div class="card shadow-sm">
+          <div class="card-header"><h3 class="card-title">Profile</h3></div>
+          <div class="card-body">
+            <dl class="row mb-0">
+              <dt class="col-sm-3">Customer ID</dt><dd class="col-sm-9">#<%= me.id %></dd>
+              <dt class="col-sm-3">Name</dt><dd class="col-sm-9"><%= me.name %></dd>
+              <dt class="col-sm-3">Username</dt><dd class="col-sm-9"><%= me.username %></dd>
+              <dt class="col-sm-3">Orders</dt><dd class="col-sm-9"><%= orders.length %></dd>
+              <dt class="col-sm-3">Licenses</dt><dd class="col-sm-9"><%= licenses.length %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="pane-orders" role="tabpanel">
+        <div class="card shadow-sm">
+          <div class="card-header"><h3 class="card-title">Order History</h3></div>
+          <div class="table-responsive">
+            <table class="table mb-0 align-middle">
+              <thead><tr><th>Order</th><th>Product</th><th>Date</th><th class="text-end">Total</th><th>Status</th></tr></thead>
+              <tbody>
+                <% if (!orders.length) { %><tr><td colspan="5" class="text-secondary text-center py-3">No orders yet.</td></tr><% } %>
+                <% orders.forEach(o => { %>
+                  <tr>
+                    <td>#<%= o.id %></td>
+                    <td><%= o.product_name %> <span class="text-secondary small">(<%= o.sku %>)</span></td>
+                    <td><%= o.created_at %></td>
+                    <td class="text-end"><%= fmt(o.total_price) %></td>
+                    <td><span class="badge text-bg-<%= o.status === 1 ? 'success' : (o.status === 2 ? 'danger' : 'warning') %>"><%= statusLabel[o.status] %></span></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="pane-licenses" role="tabpanel">
+        <div class="card shadow-sm">
+          <div class="card-header"><h3 class="card-title">My Licenses</h3></div>
+          <div class="table-responsive">
+            <table class="table mb-0 align-middle">
+              <thead><tr><th>License</th><th>Type</th><th>Granted</th><th>Expires</th><th>State</th></tr></thead>
+              <tbody>
+                <% if (!licenses.length) { %><tr><td colspan="5" class="text-secondary text-center py-3">No licenses yet. Buy a product that includes one.</td></tr><% } %>
+                <% licenses.forEach(l => { %>
+                  <tr>
+                    <td><%= l.name %></td>
+                    <td><%= typeLabel[l.type] || l.type %></td>
+                    <td><%= l.granted_at %></td>
+                    <td><%= l.expired_date ? String(l.expired_date).slice(0, 10) : 'Never' %></td>
+                    <td><% if (isLicenseValid(l)) { %><span class="badge text-bg-success">Active</span><% } else { %><span class="badge text-bg-secondary">Inactive / expired</span><% } %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="pane-posts" role="tabpanel">
+        <div class="card shadow-sm">
+          <div class="card-header"><h3 class="card-title">My Posts</h3></div>
+          <ul class="list-group list-group-flush">
+            <% if (!posts.length) { %><li class="list-group-item text-secondary">No unlocked posts yet.</li><% } %>
+            <% posts.forEach(p => { %><li class="list-group-item"><a href="/posts/<%= p.url %>"><i class="bi bi-unlock"></i> <%= p.title %></a></li><% }) %>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Remember the active tab in the URL hash (#orders, #licenses, #posts) so refresh/back keeps it.
+  document.addEventListener('DOMContentLoaded', function () {
+    var hash = location.hash.replace('#', '');
+    var btn = hash && document.getElementById('tab-' + hash);
+    if (btn) bootstrap.Tab.getOrCreateInstance(btn).show();
+    document.querySelectorAll('#account-tabs [data-bs-toggle="pill"]').forEach(function (b) {
+      b.addEventListener('shown.bs.tab', function () { history.replaceState(null, '', '#' + b.id.replace('tab-', '')); });
+    });
+  });
+</script>
+<%- include('../partials/shop_bottom') %>

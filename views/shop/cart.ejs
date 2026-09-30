@@ -1,0 +1,26 @@
+<%- include('../partials/shop_top') %>
+<h3 class="mb-3">Shopping cart</h3>
+<% if (!cart.items.length) { %>
+  <div class="alert alert-secondary">Your cart is empty. <a href="/">Browse products</a></div>
+<% } else { %>
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Product</th><th>SKU</th><th class="text-end">Price</th><th style="width:60px"></th></tr></thead>
+        <tbody>
+          <% cart.items.forEach(it => { %>
+            <tr>
+              <td><a href="/product/<%= it.product_id %>" class="text-decoration-none"><%= it.name %></a></td>
+              <td><%= it.sku %></td>
+              <td class="text-end"><%= fmt(it.price) %></td>
+              <td><form method="post" action="/cart/remove/<%= it.id %>"><button class="btn btn-sm btn-outline-danger" title="Remove"><i class="bi bi-trash"></i></button></form></td>
+            </tr>
+          <% }) %>
+        </tbody>
+        <tfoot><tr><th colspan="2" class="text-end">Subtotal</th><th class="text-end"><%= fmt(cart.subtotal) %></th><th></th></tr></tfoot>
+      </table>
+    </div>
+    <div class="card-footer text-end"><a href="/checkout" class="btn btn-primary">Proceed to checkout <i class="bi bi-arrow-right"></i></a></div>
+  </div>
+<% } %>
+<%- include('../partials/shop_bottom') %>

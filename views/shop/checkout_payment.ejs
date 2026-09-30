@@ -1,0 +1,84 @@
+<%- include('../partials/shop_top') %>
+<div class="d-flex steps mb-4">
+  <div class="step done"><a href="/checkout/address" class="text-reset text-decoration-none">1. Shipping address</a></div>
+  <div class="step active">2. Payment &amp; review</div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex align-items-center"><h3 class="card-title">Shipping to</h3><a href="/checkout/address" class="small ms-auto">Change</a></div>
+      <div class="card-body">
+        <strong><%= a.name %></strong> · <%= a.phone %><br><%= a.address %>, <%= a.city %>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header"><h3 class="card-title">Payment method</h3></div>
+      <div class="card-body">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="pm" id="pm_cod" checked>
+          <label class="form-check-label" for="pm_cod"><i class="bi bi-cash-coin"></i> Cash on delivery (COD)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header"><h3 class="card-title">Items</h3></div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead><tr><th>Product</th><th>SKU</th><th class="text-end">Price</th></tr></thead>
+          <tbody>
+            <% cart.items.forEach(it => { %>
+              <tr>
+                <td><%= it.name %></td><td><%= it.sku %></td>
+                <td class="text-end">
+                  <% if (cart.coupon) { %><del class="text-secondary"><%= fmt(it.price) %></del> <strong><%= fmt(it.final) %></strong>
+                  <% } else { %><%= fmt(it.price) %><% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header"><h3 class="card-title">Coupon</h3></div>
+      <div class="card-body">
+        <% if (cart.coupon) { %>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="badge text-bg-success fs-6"><i class="bi bi-ticket-perforated"></i> <%= cart.coupon.title %> (-<%= cart.coupon.percent %>%)</span>
+            <form method="post" action="/checkout/coupon/remove"><button class="btn btn-sm btn-outline-danger">Remove</button></form>
+          </div>
+        <% } else { %>
+          <form method="post" action="/checkout/coupon" class="input-group">
+            <input name="code" class="form-control" placeholder="Enter coupon code">
+            <button class="btn btn-outline-primary">Apply Coupon</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header"><h3 class="card-title">Order summary</h3></div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2"><span>Original price</span><span><%= fmt(cart.subtotal) %></span></div>
+        <% if (cart.coupon) { %>
+          <div class="d-flex justify-content-between mb-2 text-success">
+            <span>Coupon <%= cart.coupon.title %> (-<%= cart.coupon.percent %>%)</span><span>-<%= fmt(cart.discount) %></span>
+          </div>
+        <% } %>
+        <hr>
+        <div class="d-flex justify-content-between fs-5"><strong>Total after discount</strong><strong class="text-primary"><%= fmt(cart.total) %></strong></div>
+      </div>
+      <div class="card-footer">
+        <form method="post" action="/checkout/place">
+          <button class="btn btn-success w-100 btn-lg"><i class="bi bi-bag-check"></i> Place Order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/shop_bottom') %>

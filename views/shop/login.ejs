@@ -1,0 +1,17 @@
+<%- include('../partials/shop_top') %>
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="text-center mb-3">Customer login</h4>
+        <form method="post" action="/login">
+          <div class="mb-3"><label class="form-label">Username</label><input name="username" class="form-control" required autofocus></div>
+          <div class="mb-3"><label class="form-label">Password</label><input name="password" type="password" class="form-control" required></div>
+          <button class="btn btn-primary w-100">Login</button>
+        </form>
+        <p class="text-center mt-3 mb-0 small">No account? <a href="/register">Register</a><br><span class="text-secondary">Demo: demo / demo123</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/shop_bottom') %>

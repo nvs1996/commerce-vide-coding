@@ -1,0 +1,9 @@
+.product-card img.product-img { aspect-ratio: 4 / 3; object-fit: cover; background: #e9ecef; }
+.product-card { transition: box-shadow .15s, transform .15s; }
+.product-card:hover { box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important; transform: translateY(-2px); }
+.price { font-size: 1.25rem; font-weight: 600; }
+.steps .step { flex: 1; text-align: center; padding: .6rem; border-bottom: 3px solid #dee2e6; color: #6c757d; }
+.steps .step.active { border-color: #0d6efd; color: #0d6efd; font-weight: 600; }
+.steps .step.done { border-color: #198754; color: #198754; }
+.post-body { white-space: pre-wrap; }
+.no-access { min-height: 55vh; }

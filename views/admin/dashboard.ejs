@@ -1,0 +1,15 @@
+<%- include('../partials/admin_top') %>
+<div class="row">
+  <% counts.forEach(c => { %>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="info-box">
+        <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi <%= c.icon %>"></i></span>
+        <div class="info-box-content">
+          <span class="info-box-text"><a href="/admin/<%= c.key %>" class="text-decoration-none"><%= c.label %></a></span>
+          <span class="info-box-number"><%= c.n %></span>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<%- include('../partials/admin_bottom') %>
