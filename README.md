@@ -77,17 +77,19 @@ Uploaded product images live in `public/uploads/`. They are not in Git, so a fre
 - Login for admin users (table `users`).
 - Add / edit / delete for: **Users, Customers, Products, Licenses, Posts, Quotes, Orders, Coupons**, plus **Granted Licenses** (licenses given to customers).
 - Every listing is paginated (default **10 per page**; 10 / 25 / 50 / 100 selectable).
-- **Product image upload** with live preview (JPG, PNG, GIF, WebP, max 5 MB). Old files are removed when an image is replaced or the product is deleted.
+- **Image upload** with live preview for **product images**, **customer avatars** and **admin avatars** (shown in the admin header) (JPG, PNG, GIF, WebP, max 5 MB). Old files are removed when an image is replaced or the record is deleted.
 - **License rules:** a Product or Post can only be linked to a license that is **active** and **not expired**. A record keeps its current license when other fields are edited.
 - License `expired_date` is date-only. A license is valid through the whole expiry day. Empty means it never expires.
 - Posts have a URL slug (auto-made from the title if empty) and an optional required license.
 
 ### Storefront (`/`)
+- **Members only:** every storefront page and action needs a customer login. Guests are redirected to `/login` (only `/login` and `/register` are open) and return to the page they wanted after signing in.
 - Home page lists all products (name, price, SKU). Search by **name or SKU** in the header.
 - Product detail page (PDP) and **Add to cart** (needs login). Each cart line is a row in `quotes`.
 - **Checkout in 2 steps:** (1) shipping address, (2) payment (COD) with item list, coupon box (**Apply Coupon**), and a summary that shows original price, coupon discount, and the total after discount. **Place Order** creates the orders.
 - Orders are saved with status **Complete**. When the product has a license, the customer is granted that license.
 - **My account** (`/account`): side tabs for Profile, Order History, My Licenses, My Posts.
+- **Customer avatar** (set in Admin → Customers) is shown in the header and on My account. Without an avatar, a circle with the customer's first letter is shown.
 - **Posts** (`/posts`): posts the customer cannot read are shown locked and cannot be clicked. Opening a locked post URL directly shows a centered "You do not have access" block (HTTP 403). Posts with no license are public.
 
 ### Demo data (seeded on first run)
@@ -104,8 +106,8 @@ Try it: log in as `demo`, buy *Pro Course* with coupon `SAVE20`, then open `/pos
 
 | Table | Main columns |
 |-------|--------------|
-| `users` | id, username, password (admin login) |
-| `customers` | id, name, username, password |
+| `users` | id, username, password (admin login), **avatar** |
+| `customers` | id, name, username, password, **avatar** |
 | `products` | id, name, sku (unique), price, image, license_id |
 | `licenses` | id, name, type (1 Personal, 2 Business, 3 Enterprise), status, expired_date |
 | `posts` | id, title, body, license_id, status (`published`/`draft`), url (unique), created_at |
@@ -153,7 +155,7 @@ data.db                SQLite database (created on first run, git-ignored)
 | `EADDRINUSE: address already in use :::3000` | Another process uses the port. Stop it, or start with another `PORT`. |
 | Windows: find and stop the process on port 3000 | `Get-NetTCPConnection -LocalPort 3000 -State Listen \| ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }` |
 | Lost demo data / want a clean start | Delete `data.db*` and restart (see "Reset the database"). |
-| Product images broken after cloning | Uploads are not in Git. Re-upload in Admin → Products. |
+| Product images / avatars broken after cloning | Uploads are not in Git. Re-upload in Admin → Products / Customers. |
 | Login works then logs out after restart | Sessions are kept in memory. Restarting the server clears them. |
 
 ---

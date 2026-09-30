@@ -4,7 +4,7 @@
   <div class="col-md-3">
     <div class="card shadow-sm">
       <div class="card-body text-center border-bottom">
-        <i class="bi bi-person-circle text-primary" style="font-size:3rem"></i>
+        <div class="mb-2"><%- include('../partials/avatar', { c: me, size: 96 }) %></div>
         <div class="fw-semibold"><%= me.name %></div>
         <div class="text-secondary small">@<%= me.username %></div>
       </div>
@@ -33,6 +33,7 @@
           <div class="card-header"><h3 class="card-title">Profile</h3></div>
           <div class="card-body">
             <dl class="row mb-0">
+              <dt class="col-sm-3">Avatar</dt><dd class="col-sm-9"><%- include('../partials/avatar', { c: me, size: 56 }) %></dd>
               <dt class="col-sm-3">Customer ID</dt><dd class="col-sm-9">#<%= me.id %></dd>
               <dt class="col-sm-3">Name</dt><dd class="col-sm-9"><%= me.name %></dd>
               <dt class="col-sm-3">Username</dt><dd class="col-sm-9"><%= me.username %></dd>

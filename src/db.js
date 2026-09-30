@@ -90,6 +90,13 @@ CREATE TABLE IF NOT EXISTS customer_licenses (
 );
 `);
 
+// Migration: avatar (image path) columns were added after the first release.
+for (const table of ['customers', 'users']) {
+  if (!db.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === 'avatar')) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN avatar TEXT`);
+  }
+}
+
 // expired_date is date-only; trim any time part saved by earlier versions.
 db.exec("UPDATE licenses SET expired_date = substr(expired_date, 1, 10) WHERE length(expired_date) > 10");
 

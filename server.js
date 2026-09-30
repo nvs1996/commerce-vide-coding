@@ -19,8 +19,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: 'dev-secret-change-me', resave: false, saveUninitialized: false }));
 
 app.use((req, res, next) => {
-  res.locals.customer = req.session.customer || null;
-  res.locals.admin = req.session.admin || null;
+  // Read the customer fresh so name/avatar edited in admin show up without re-login.
+  let customer = null;
+  if (req.session.customer) {
+    customer = db.prepare('SELECT id, name, username, avatar FROM customers WHERE id = ?').get(req.session.customer.id) || null;
+    if (!customer) delete req.session.customer;   // account was deleted
+  }
+  res.locals.customer = customer;
+  let admin = null;
+  if (req.session.admin) {
+    admin = db.prepare('SELECT id, username, avatar FROM users WHERE id = ?').get(req.session.admin.id) || null;
+    if (!admin) delete req.session.admin;   // admin user was deleted
+  }
+  res.locals.admin = admin;
   res.locals.flash = req.session.flash || null;
   delete req.session.flash;
   res.locals.fmt = (n) => '$' + Number(n || 0).toFixed(2);

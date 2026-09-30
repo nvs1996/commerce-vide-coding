@@ -19,6 +19,19 @@ function requireLogin(req, res, next) {
   res.redirect('/login');
 }
 
+// The whole storefront is members-only: everything except login/register needs a customer session.
+// (/admin has its own auth; static assets are served before this router.)
+const GUEST_PATHS = ['/login', '/register'];
+router.use((req, res, next) => {
+  if (req.session.customer || GUEST_PATHS.includes(req.path) || req.path.startsWith('/admin')) {
+    if (req.session.customer && req.method === 'GET' && GUEST_PATHS.includes(req.path)) return res.redirect('/');
+    return next();
+  }
+  if (req.method === 'GET') req.session.next = req.originalUrl;
+  if (req.originalUrl !== '/') req.session.flash = { type: 'warning', msg: 'Please log in to continue.' };
+  res.redirect('/login');
+});
+
 // ---------- products ----------
 const PRODUCT_SELECT = `SELECT p.*, l.name AS license_name FROM products p LEFT JOIN licenses l ON l.id = p.license_id`;
 
@@ -92,7 +105,7 @@ router.post('/logout', (req, res) => {
 // ---------- my account ----------
 router.get('/account', requireLogin, (req, res) => {
   const cid = req.session.customer.id;
-  const me = db.prepare('SELECT id, name, username FROM customers WHERE id = ?').get(cid);
+  const me = db.prepare('SELECT id, name, username, avatar FROM customers WHERE id = ?').get(cid);
   const orders = db.prepare(`
     SELECT o.*, p.name AS product_name, p.sku FROM orders o
     LEFT JOIN products p ON p.id = o.product_id

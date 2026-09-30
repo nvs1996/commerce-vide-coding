@@ -52,6 +52,7 @@ const RESOURCES = {
   users: {
     label: 'Users', icon: 'bi-person-gear', table: 'users',
     fields: [
+      { name: 'avatar', label: 'Avatar', type: 'image' },
       { name: 'username', label: 'Username', type: 'text', required: true },
       { name: 'password', label: 'Password', type: 'password', required: true, list: false },
     ],
@@ -59,6 +60,7 @@ const RESOURCES = {
   customers: {
     label: 'Customers', icon: 'bi-people', table: 'customers',
     fields: [
+      { name: 'avatar', label: 'Avatar', type: 'image' },
       { name: 'name', label: 'Name', type: 'text', required: true },
       { name: 'username', label: 'Username', type: 'text', required: true },
       { name: 'password', label: 'Password', type: 'password', required: true, list: false },

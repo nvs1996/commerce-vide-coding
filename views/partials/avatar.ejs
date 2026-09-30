@@ -1,0 +1,7 @@
+<%# Circle avatar. Locals: c (customer with name/avatar), size (px). Falls back to the initial letter. %>
+<% if (c.avatar) { %>
+  <img src="<%= c.avatar %>" alt="<%= c.name %>" class="rounded-circle border avatar-img" style="width:<%= size %>px;height:<%= size %>px;object-fit:cover">
+<% } else { %>
+  <span class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center fw-semibold avatar-img"
+        style="width:<%= size %>px;height:<%= size %>px;font-size:<%= Math.round(size * 0.45) %>px"><%= (c.name || '?').trim().charAt(0).toUpperCase() %></span>
+<% } %>
